@@ -97,8 +97,8 @@ def relable_nodes(graphs_list, rangetoLabels = {(0, 0.05): 'z', (0.05, 0.1): 'a'
         for node in degreeDict.keys():
             val = degreeDict[node] /float(len(nx_graph))
             labelDict[node] = inRange(rangetoLabels, val)
-        nx.set_node_attributes(nx_graph, 'attr_name', labelDict)
-        graphs_list[i] = nx_graph
+        nx.set_node_attributes(nx_graph,  labelDict, 'attr_name')
+        graphs_list[i].nx_graph = nx_graph
         return graphs_list
 
 
