@@ -15,26 +15,30 @@ class StopError(Exception):
 
 class NonConvergenceError(Exception):
     pass
+
+
 class StopError(Exception):
     pass
-        
-def solve_1d_linesearch_quad_funct(a,b,c):
-    # solve min f(x)=a*x**2+b*x+c sur 0,1
-    f0=c
-    df0=b
-    f1=a+f0+df0
 
-    if a>0: # convex
-        minimum=min(1,max(0,-b/(2*a)))
-        #print('entrelesdeux')
+
+def solve_1d_linesearch_quad_funct(a, b, c):
+    # solve min f(x)=a*x**2+b*x+c sur 0,1
+    f0 = c
+    df0 = b
+    f1 = a + f0 + df0
+
+    if a > 0:  # convex
+        minimum = min(1, max(0, -b / (2 * a)))
+        # print('entrelesdeux')
         return minimum
-    else: # non convexe donc sur les coins
-        if f0>f1:
-            #print('sur1 f(1)={}'.format(f(1)))            
+    else:  # non convexe donc sur les coins
+        if f0 > f1:
+            #print('sur1 f(1)={}'.format(f(1)))
             return 1
         else:
             #print('sur0 f(0)={}'.format(f(0)))
             return 0
+
 
 def line_search_armijo(f, xk, pk, gfk, old_fval, args=(), c1=1e-4, alpha0=0.99):
     """
@@ -86,11 +90,12 @@ def line_search_armijo(f, xk, pk, gfk, old_fval, args=(), c1=1e-4, alpha0=0.99):
 
     return alpha, fc[0], phi1
 
-def do_linesearch(cost,G,deltaG,Mi,f_val,amijo=True,C1=None,C2=None,reg=None,Gc=None,constC=None,M=None):
+
+def do_linesearch(cost, G, deltaG, Mi, f_val, amijo=True, C1=None, C2=None, reg=None, Gc=None, constC=None, M=None):
     #Gc= st
-    #G=xt
-    #deltaG=st-xt
-    #Gc+alpha*deltaG=st+alpha(st-xt)
+    # G=xt
+    # deltaG=st-xt
+    # Gc+alpha*deltaG=st+alpha(st-xt)
     """
     Solve the linesearch in the FW iterations
     Parameters
@@ -137,19 +142,20 @@ def do_linesearch(cost,G,deltaG,Mi,f_val,amijo=True,C1=None,C2=None,reg=None,Gc=
     if amijo:
         alpha, fc, f_val = line_search_armijo(cost, G, deltaG, Mi, f_val)
     else:
-        dot1=np.dot(C1,deltaG) 
-        dot12=dot1.dot(C2) # C1 dt C2
-        a=-2*reg*np.sum(dot12*deltaG) #-2*alpha*<C1 dt C2,dt> si qqlun est pas bon c'est lui
-        b=np.sum((M+reg*constC)*deltaG)-2*reg*(np.sum(dot12*G)+np.sum(np.dot(C1,G).dot(C2)*deltaG)) 
-        c=cost(G) #f(xt)
+        dot1 = np.dot(C1, deltaG)
+        dot12 = dot1.dot(C2)  # C1 dt C2
+        a = -2 * reg * np.sum(dot12 * deltaG)  # -2*alpha*<C1 dt C2,dt> si qqlun est pas bon c'est lui
+        b = np.sum((M + reg * constC) * deltaG) - 2 * reg * (np.sum(dot12 * G) + np.sum(np.dot(C1, G).dot(C2) * deltaG))
+        c = cost(G)  # f(xt)
 
-        alpha=solve_1d_linesearch_quad_funct(a,b,c)
-        fc=None
-        f_val=cost(G+alpha*deltaG)
-        
-    return alpha,fc,f_val
+        alpha = solve_1d_linesearch_quad_funct(a, b, c)
+        fc = None
+        f_val = cost(G + alpha * deltaG)
 
-def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=False,log=False,amijo=True,C1=None,C2=None,constC=None):
+    return alpha, fc, f_val
+
+
+def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=False, log=False, amijo=True, C1=None, C2=None, constC=None):
     """
     Solve the general regularized OT problem with conditional gradient
         The function solves the following optimization problem:
@@ -201,7 +207,7 @@ def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=Fals
     loop = 1
 
     if log:
-        log = {'loss': [],'delta_fval': []}
+        log = {'loss': [], 'delta_fval': []}
 
     if G0 is None:
         G = np.outer(a, b)
@@ -211,7 +217,7 @@ def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=Fals
     def cost(G):
         return np.sum(M * G) + reg * f(G)
 
-    f_val = cost(G) #f(xt)
+    f_val = cost(G)  # f(xt)
 
     if log:
         log['loss'].append(f_val)
@@ -227,33 +233,33 @@ def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=Fals
 
         it += 1
         old_fval = f_val
-        #G=xt
+        # G=xt
         # problem linearization
-        Mi = M + reg * df(G) #Gradient(xt)
+        Mi = M + reg * df(G)  # Gradient(xt)
         # set M positive
         Mi += Mi.min()
 
         # solve linear program
-        Gc = emd(a, b, Mi) #st
+        Gc = emd(a, b, Mi)  # st
 
-        deltaG = Gc - G #dt
+        deltaG = Gc - G  # dt
 
         # argmin_alpha f(xt+alpha dt)
-        alpha, fc, f_val = do_linesearch(cost=cost,G=G,deltaG=deltaG,Mi=Mi,f_val=f_val,amijo=amijo,constC=constC,C1=C1,C2=C2,reg=reg,Gc=Gc,M=M)
+        alpha, fc, f_val = do_linesearch(cost=cost, G=G, deltaG=deltaG, Mi=Mi, f_val=f_val, amijo=amijo, constC=constC, C1=C1, C2=C2, reg=reg, Gc=Gc, M=M)
 
-        if alpha is None or np.isnan(alpha) :
+        if alpha is None or np.isnan(alpha):
             raise NonConvergenceError('Alpha n a pas été trouvé')
         else:
-            G = G + alpha * deltaG #xt+1=xt +alpha dt
+            G = G + alpha * deltaG  # xt+1=xt +alpha dt
 
         # test convergence
         if it >= numItermax:
             loop = 0
-            
+
         delta_fval = (f_val - old_fval)
 
         #delta_fval = (f_val - old_fval)/ abs(f_val)
-        #print(delta_fval)
+        # print(delta_fval)
         if abs(delta_fval) < stopThr:
             loop = 0
 
@@ -265,7 +271,7 @@ def cg(a, b, M, reg, f, df, G0=None, numItermax=500, stopThr=1e-09, verbose=Fals
             if it % 20 == 0:
                 print('{:5s}|{:12s}|{:8s}'.format(
                     'It.', 'Loss', 'Delta loss') + '\n' + '-' * 32)
-            print('{:5d}|{:8e}|{:8e}|{:5e}'.format(it, f_val, delta_fval,alpha))
+            print('{:5d}|{:8e}|{:8e}|{:5e}'.format(it, f_val, delta_fval, alpha))
 
     if log:
         return G, log
