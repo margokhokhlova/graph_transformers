@@ -71,10 +71,10 @@ if __name__ == '__main__':
     train_dataset = GraphDataset(X_train,Y_train)
     test_dataset = GraphDataset(X_test, Y_test)
 
-    walk, l = train_dataset.__getitem__(0)
-    print(walk.shape)
+    #walk, l = train_dataset.__getitem__(0)
+    #print(walk.shape) # a small test to check the walk
 
-    params = {'batch_size': 16,
+    params = {'batch_size': 20,
               'shuffle': True,
               'num_workers': 6}
     training_generator = DataLoader(train_dataset, **params)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     valid_acc = []
 
     # Main epoch loop
-    num_epochs = 5
+
     for epoch in range(num_epochs):
         print("Epoch: {}".format(epoch))
         t_loss = train(model, training_generator, opt, sch, loss_func, device)

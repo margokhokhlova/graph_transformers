@@ -120,6 +120,6 @@ class Transformer(nn.Module):
         #         indices = torch.triu_indices(t, t, offset=1)
         #         x[:, indices[0], indices[1]] = float('-inf')
 
-        out = F.logsigmoid(x)
+        out = F.log_softmax(x, dim=1)
 
         return out
