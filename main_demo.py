@@ -42,8 +42,8 @@ def validate(model, dataset, device):
 
     for graph in dataset:
         x, y = graph
-        x = x.to(device)
-        y = y.to(device)
+        x = x.to(device, dtype=torch.float)
+        y = y.to(device,dtype=torch.long)
         y_pred = model(x)
 
         pred = y_pred.max(dim=1)[1]
@@ -82,13 +82,12 @@ if __name__ == '__main__':
 
     EMBED_DIM = 4 # my embeddings are attributes
     num_classes = 2
-    vocab_size = 128
     num_heads = 8
     depth = 6
     p, q = 1, 1
     num_epochs = 16
     # k, num_heads, depth, seq_length, num_tokens, num_
-    model = Transformer(EMBED_DIM, num_heads, depth, vocab_size, num_classes).to(device)
+    model = Transformer(EMBED_DIM, num_heads, test_dataset.walklenght, depth, num_classes).to(device)
     lr_warmup = 10000
     batch_size = 16
     lr = 1e-3
@@ -105,6 +104,8 @@ if __name__ == '__main__':
         print("Epoch: {}".format(epoch))
         t_loss = train(model, training_generator, opt, sch, loss_func, device)
         train_loss.append(t_loss)
+        print(t_loss)
 
         v_acc = validate(model, test_generator, device)
         valid_acc.append(v_acc)
+        print(v_acc)

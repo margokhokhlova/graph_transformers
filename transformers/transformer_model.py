@@ -87,14 +87,8 @@ class TransformerBlock(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, k, num_heads, depth, num_tokens, num_classes):
+    def __init__(self, k, num_heads, walklength, depth, num_classes):
         super(Transformer, self).__init__()
-
-        self.num_tokens = num_tokens
-
-        # Embedding tokens and position layers
-        #self.token_embed_layer = nn.Embedding(num_tokens, k)
-
         # Transformer blocks
         self.tf_network = []
         for _ in range(depth):
@@ -103,23 +97,23 @@ class Transformer(nn.Module):
         self.tf_network = nn.Sequential(*self.tf_network)
 
         # Sequence to class output
-        self.output_layer = nn.Linear(k, num_classes)
+        self.fc = nn.Linear(k*walklength, walklength)
+        self.dropout1 = nn.Dropout(p=0.35, inplace=False)
+        self.output_layer = nn.Linear(walklength, num_classes)
 
     def forward(self, x):
         # in (b, t) tensor with int values representing words
         # out (b, c) tensor logprobs over c classes
 
-        # generate token embeddings
-        #tokens = self.token_embed_layer(x)
-
-
         b_sz, t_sz, k_sz = x.size()
 
         # Transformer forward
         x = self.tf_network(x)
-
+        x = x.view(b_sz, -1) #reshape
         # Average pool over t dimension and project to class probabilities
-        x = self.output_layer(x.mean(dim=1)) #TODO check if I need this one
+        x = self.fc(x)
+        x = self.dropout1(x)
+        x = self.output_layer(x) #TODO check if I need this one
 
         # Optional (auto-regressive) transformer
         # no looking ahead, enforce via mask, prior to softmax
