@@ -26,7 +26,7 @@ class GraphDataset(Dataset):
         self.walklength = walklength
 
     def __len__(self):
-        return len(self.X)
+        return len(self.graphs)
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
