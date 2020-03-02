@@ -87,7 +87,7 @@ if __name__ == '__main__':
     p, q = 1, 1
     num_epochs = 16
     # k, num_heads, depth, seq_length, num_tokens, num_
-    model = Transformer(EMBED_DIM, num_heads, test_dataset.walklenght, depth, num_classes).to(device)
+    model = Transformer(EMBED_DIM, num_heads, test_dataset.walklength, depth, num_classes).to(device)
     lr_warmup = 10000
     batch_size = 16
     lr = 1e-3

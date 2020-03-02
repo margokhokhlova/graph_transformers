@@ -1,33 +1,29 @@
 """Graph2Vec module. Modified from the original version"""
-import os,sys
-import glob
+import os
+import sys
 import hashlib
-import tqdm
 import networkx as nx
-from joblib import Parallel, delayed
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 sys.path.append(os.path.realpath('lib'))
-from lib.data_loader import load_local_data
 
 
 class WeisfeilerLehmanMachine:
 
     """
-    Weisfeiler Lehman feature extractor class.
-    Wlnm extracts an
-    enclosing subgraph of each target link and encodes the subgraph
-    as an adjacency matrix. The key novelty of the encoding comes
-    from a fast hashing-based Weisfeiler-Lehman (WL) algorithm that
-    labels the vertices according to their structural roles in the subgraph
-    while preserving the subgraph intrinsic directionality
-    """
+    Weisfeiler Lehman feature extractor class.
+    Wlnm extracts an
+    enclosing subgraph of each target link and encodes the subgraph
+    as an adjacency matrix. The key novelty of the encoding comes
+    from a fast hashing-based Weisfeiler-Lehman (WL) algorithm that
+    labels the vertices according to their structural roles in the subgraph
+    while preserving the subgraph intrinsic directionality
+    """
 
     def __init__(self, graph, features, iterations):
         '''
-                Initialization method which also executes feature extraction.
-                :param graph: The Nx graph object.
-                :param features: Feature hash table.
-                :param iterations: Number of WL iterations.
+                Initialization method which also executes feature extraction.
+                :param graph: The Nx graph object.
+                :param features: Feature hash table.
+                :param iterations: Number of WL iterations.
         '''
         self.iterations = iterations
         self.graph = graph
@@ -37,11 +33,10 @@ class WeisfeilerLehmanMachine:
         self.do_recursions()
 
     def do_a_recursion(self):
-
         '''
-        The method does a single WL recursion.
-        :return new_features: The hash table with extracted WL features.
-        '''
+        The method does a single WL recursion.
+        :return new_features: The hash table with extracted WL features.
+        '''
         new_features = {}
         for node in self.nodes:
             nebs = self.graph.neighbors(node)
@@ -54,22 +49,21 @@ class WeisfeilerLehmanMachine:
             self.extracted_features = self.extracted_features + list(new_features.values())
         return new_features
 
-
     def do_recursions(self):
         '''
-            The method does a series of WL recursions.
-        '''
+            The method does a series of WL recursions.
+        '''
         for _ in range(self.iterations):
             self.features = self.do_a_recursion()
 
 
-def get_features(graph, labels = False):
+def get_features(graph, labels=False):
     '''
-    Function to read the graph and features from a json file.
-    :return graph: The graph object.
-    :return features: Features hash table.
-    :return name: Name of the graph. (index)
-    '''
+    Function to read the graph and features from a json file.
+    :return graph: The graph object.
+    :return features: Features hash table.
+    :return name: Name of the graph. (index)
+    '''
     nx_graph = graph.nx_graph
     if labels:
         features = nx.get_node_attributes(nx_graph, 'attr_name')
@@ -79,19 +73,15 @@ def get_features(graph, labels = False):
     features = {int(k): v for k, v in features.items()}
     return nx_graph, features
 
+
 def feature_extractor(graph, rounds, name='g'):
-
     '''
-    Function to extract WL features from a graph.
-    :param graphs: list of graphs
-    :param rounds: Number of WL iterations.
-
+    Function to extract WL features from a graph.
+    :param graphs: list of graphs
+    :param rounds: Number of WL iterations.
     '''
 
-    graph,features = get_features(graph)
+    graph, features = get_features(graph)
     machine = WeisfeilerLehmanMachine(graph, features, rounds)  # next-generation link prediction method
     doc = TaggedDocument(words=machine.extracted_features, tags=["g_" + name])
     return doc
-
-
-
