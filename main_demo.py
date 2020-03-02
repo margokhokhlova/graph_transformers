@@ -63,7 +63,7 @@ if __name__ == '__main__':
     else:
         device = torch.device("cpu")
 
-    dataset_n='aids'
+    dataset_n='coildel'
     path='data/'
     X,y=load_local_data(path,dataset_n, attributes=True)
     X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2)
@@ -80,8 +80,8 @@ if __name__ == '__main__':
     training_generator = DataLoader(train_dataset, **params)
     test_generator = DataLoader(test_dataset, **params)
 
-    EMBED_DIM = 4 # my embeddings are attributes
-    num_classes = 2
+    EMBED_DIM = 2 # my embeddings are attributes
+    num_classes = 100
     num_heads = 8
     depth = 6
     p, q = 1, 1
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     # k, num_heads, depth, seq_length, num_tokens, num_
     model = Transformer(EMBED_DIM, num_heads, test_dataset.walklength, depth, num_classes).to(device)
     lr_warmup = 10000
-    batch_size = 16
+    batch_size = 20
     lr = 1e-3
     opt = torch.optim.Adam(lr=lr, params=model.parameters())
     sch = torch.optim.lr_scheduler.LambdaLR(opt, lambda i: min(i / (lr_warmup / batch_size), 1.0))
@@ -103,9 +103,10 @@ if __name__ == '__main__':
     for epoch in range(num_epochs):
         print("Epoch: {}".format(epoch))
         t_loss = train(model, training_generator, opt, sch, loss_func, device)
+        t_acc = validate(model, training_generator, device)
         train_loss.append(t_loss)
-        print(t_loss)
+        print(f"Loss{t_loss}, accuracy {t_acc}")
 
         v_acc = validate(model, test_generator, device)
         valid_acc.append(v_acc)
-        print(v_acc)
+        print("val accuracy ",v_acc)
