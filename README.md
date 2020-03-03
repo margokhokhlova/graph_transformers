@@ -16,7 +16,10 @@ Theoretically, we can create as many new samples as we want by just performing t
 
 Results 
 
-| dataset | num of graphs |          task           |           parameters             | test accuracy  |\\
-|  AIDS   |     2000      |  binary classification  | Bs 20, num of heads 8, 16 epochs |      98        |\\
-|   BZR   |     405       |  binary classification  | Bs 20, num of heads 8, 16 epochs |      79        |\\
-|COIL-DEL |    3900       | multiclass classication | BS 20, nb of heads 12, 16 epochs |       2        |\\
+| dataset | num of graphs |          task           |           parameters             | test accuracy  |
+
+|  AIDS   |     2000      |  binary classification  | Bs 20, num of heads 8, 16 epochs |      98        |
+
+|   BZR   |     405       |  binary classification  | Bs 20, num of heads 8, 16 epochs |      79        |
+
+|COIL-DEL |    3900       | multiclass classication | BS 20, nb of heads 12, 16 epochs |       2        |
