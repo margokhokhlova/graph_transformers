@@ -23,7 +23,9 @@ Results
 |   BZR   |     405       |  binary classification  | Bs 20, num of heads 8, 16 epochs |      79        |
 
 |COIL-DEL |    3900       | multiclass classication | BS 20, nb of heads 12, 16 epochs |       2        |
+
 |ENZYMES_2|     600       |     Multi class (6)     |Bs 20, num of heads 8, 16 epochs  |       30       |
+
 |PROTEINS |    1113       |     Binary classif      |Bs 20, num of heads 8, 16 epochs  |       75       |
 
 
