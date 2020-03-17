@@ -1,10 +1,12 @@
 # graph_transformers
 transformers on graphs repo
 
+## embeddings
 This project is created to test whether transformers can be used to create graph embeddings. 
 Before starting the work with a transformer, I adapted the code for two papers proposing graph embeddings:
 
 Narayanan, Annamalai, et al. "graph2vec: Learning distributed representations of graphs." arXiv preprint arXiv:1707.05005 (2017).
+
 Figueiredo, Daniel R., Leonardo FR Ribeiro, and Pedro HP Saverese. "struc2vec: Learning node representations from structural identity." arXiv preprint arXiv:1704.03165 (2017).
 
 The embeddings methods are evaluated in the notebook benchmarks, along with a couple of graph kernels from grakel library.
@@ -15,7 +17,7 @@ constructed from the AIDS Antiviral Screen Database of Active Compounds. This da
 classes, viz., active (400 elements) and inactive (1600 elements), which respectively represent molecules with
 possible activity against HIV.
 
-Transofrmer architecture:
+## Transofrmer architecture:
 A tranformer with a linear regression layer.
 Input - random walks performed on graphs as features, binary labels for each graph.
 Output - new vector representations of the graphs. The main idea is that the transformer should be able to generate the embeddings 
@@ -38,6 +40,6 @@ Results on AIDS and several other datasets
 
 
 
-# TODO: 
+## TODO: 
 Here is the paper which uses transfomer to create an embedding.  it is not really the same case, but some ideas of having a single master query should be adopted.
 https://arxiv.org/pdf/1911.07757.pdf
