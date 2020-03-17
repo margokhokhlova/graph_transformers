@@ -1,8 +1,8 @@
 # graph_transformers
-transformers on graphs repo
+Transformers on graphs repo. This project is created to test whether transformers can be used to create graph embeddings which are better and more stable than the existing ones. 
 
-## embeddings
-This project is created to test whether transformers can be used to create graph embeddings. 
+## Embeddings graph2vec and struc2vec
+
 Before starting the work with a transformer, I adapted the code for two papers proposing graph embeddings:
 
 Narayanan, Annamalai, et al. "graph2vec: Learning distributed representations of graphs." arXiv preprint arXiv:1707.05005 (2017).
@@ -11,6 +11,7 @@ Figueiredo, Daniel R., Leonardo FR Ribeiro, and Pedro HP Saverese. "struc2vec: L
 
 The embeddings methods are evaluated in the notebook benchmarks, along with a couple of graph kernels from grakel library.
 
+## Data
 Data: main dataset to be used is AIDS dataset http://networkrepository.com/AIDS.php.
 AIDS database consists of 2000 graphs representing molecular compounds which are
 constructed from the AIDS Antiviral Screen Database of Active Compounds. This dataset consists of two
